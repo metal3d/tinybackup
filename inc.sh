@@ -5,9 +5,9 @@ source $(dirname $0)/init.sh || exit $?
 
 DATE=$(date +"%Y-%m-%d")
 for s in $SOURCES; do 
-    for f in $(find $s -type f -mtime -1); do
+    for f in $(find $s -type f -mtime -$FREQ); do
         destdir=$DEST/${DATE}$(dirname $f)
         mkdir -p $destdir
-        cp -ra $f $destdir
+        cp -a $f $destdir
     done
 done
