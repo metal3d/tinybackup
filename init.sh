@@ -24,6 +24,16 @@ function check-ignore() {
     return 0
 }
 
+# create an empty tar file, usefull to be able
+# to "append" files.
+function create-empty-tar() {
+    [ -f $1 ] && return 0
+    tar cf $1 /dev/null
+    tar --delete -f $1 dev/null
+}
+
+
+TAR="false"
 source $(dirname $0)/conf.sh
 
 [ -z "$SOURCES" ] && echo "SOURCES is empty" >&2 && exit 1
@@ -33,7 +43,25 @@ source $(dirname $0)/conf.sh
 
 # allow to have exclude list file
 __EXCLUDE_FROM=""
-[ -z "$EXCLUDE" ] || __EXCLUDE_FROM="--exclude-from=$EXCLUDE"
+__TAR_EXCLUDE_FROM=""
+__IGNORE=$(mktemp)
+
+# tar cannot use rsync exclude format, so we 
+# create another list that contains full path
+# from ignore list
+if [ ! -z "$EXCLUDE" ]; then
+    __EXCLUDE_FROM="--exclude-from=$EXCLUDE"
+    while read ignore; do
+        isdir=0
+        echo "$ignore" | grep -P "/$" && isdir=1
+        ignore=$(echo $ignore | sed 's,/$,,') 
+        [ $isdir -eq 1 ] && t=d || t=f
+        for s in $SOURCES; do
+            find $s -type $t -name "*$ignore" >> $__IGNORE
+        done
+    done <$EXCLUDE
+    __TAR_EXCLUDE_FROM="--exclude-from=$__IGNORE"
+fi
 
 mkdir -p $DEST
 fix-dirname
