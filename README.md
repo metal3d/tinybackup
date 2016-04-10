@@ -17,6 +17,15 @@ SOURCES="/opt/searx/ /opt/metal3d.org"
 FREQ=1
 # how many incremetal file to store
 KEEP=8
+
+# exclude file list
+EXCLUDE=ignorelist.txt
+
+# Only for the "full" backup
+# note: GZ will be done only if TAR == true
+TAR=true|false
+GZ=true|false
+
 ```
 
 Then, you may use:
@@ -25,6 +34,18 @@ Then, you may use:
 - `bash full.sh` to save the entire directories
 
 Note that "inc.sh" and "full.sh" include "init.sh" which removes old backups (older than `KEEP` days).
+
+# Ignore file
+
+Ingore file shoud be formatted for rsync. A function is "init.sh" will use it to build a "tar" complient ingorelist if you want to use "TAR" backup.
+
+Example, to ignore ".git" and "dir1" directory, and "file.txt" file:
+
+```
+.git/
+dir1/
+file.txt
+```
 
 # Cron
 
