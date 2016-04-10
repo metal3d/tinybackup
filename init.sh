@@ -32,8 +32,7 @@ function create-empty-tar() {
     tar --delete -f $1 dev/null
 }
 
-
-TAR="false"
+[ -f $(dirname $0)/conf.sh ] || (echo "You must provide a conf.sh in $(dirname $0) directory" >&2 && exit 1)
 source $(dirname $0)/conf.sh
 
 [ -z "$SOURCES" ] && echo "SOURCES is empty" >&2 && exit 1
