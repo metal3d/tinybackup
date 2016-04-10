@@ -22,4 +22,4 @@ done
 [ "$TAR" == "true" ] && [ "$GZ" == "true" ] && gzip $DEST/full.tar
 
 # remove ignorelist generated for tar
-[ ! -z "$EXCLUDE" ] && rm $__IGNORE
+rm $__IGNORE
