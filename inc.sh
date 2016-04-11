@@ -2,6 +2,7 @@
 
 source $(dirname $0)/init.sh || exit $?
 
+launch-incremental-before-action || exit 1
 
 DATE=$(date +"%Y-%m-%d")
 for s in $SOURCES; do 
@@ -13,3 +14,5 @@ for s in $SOURCES; do
         rsync -av $__EXCLUDE_FROM $f $destdir
     done
 done
+
+launch-incremental-after-action || exit 1

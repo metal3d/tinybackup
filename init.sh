@@ -13,6 +13,7 @@ function fix-dirname() {
     for s in $_S; do
         SOURCES=$SOURCES" "$(echo $s | sed 's,/$,,') 
     done
+    DEST=$(echo $DEST | sed 's,/$,,') 
 }
 
 # basic check for ingored files
@@ -30,6 +31,35 @@ function create-empty-tar() {
     [ -f $1 ] && return 0
     tar cf $1 /dev/null
     tar --delete -f $1 dev/null
+}
+
+# Launch before actions
+function launch-action() {
+    if [ ! -z "$1" ]; then
+        $1
+        return $?
+    fi
+    return 0
+}
+
+function launch-before-action(){
+    launch-action $BEFORE_FULL
+    return $?
+}
+
+function launch-after-action(){
+    launch-action $AFTER_FULL
+    return $?
+}
+
+function launch-incremental-before-action(){
+    launch-action $BEFORE_INCREMENTAL
+    return $?
+}
+
+function launch-incremental-after-action(){
+    launch-action $AFTER_INCREMENTAL
+    return $?
 }
 
 [ -f $(dirname $0)/conf.sh ] || (echo "You must provide a conf.sh in $(dirname $0) directory" >&2 && exit 1)
@@ -52,7 +82,7 @@ if [ ! -z "$EXCLUDE" ]; then
     __EXCLUDE_FROM="--exclude-from=$EXCLUDE"
     while read ignore; do
         isdir=0
-        echo "$ignore" | grep -P "/$" && isdir=1
+        echo "$ignore" | grep -P "/$" 2>&1 >/dev/null && isdir=1
         ignore=$(echo $ignore | sed 's,/$,,') 
         [ $isdir -eq 1 ] && t=d || t=f
         for s in $SOURCES; do

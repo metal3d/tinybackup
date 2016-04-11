@@ -18,14 +18,21 @@ FREQ=1
 # how many incremetal file to store
 KEEP=8
 
+# (optional)
 # exclude file list
 EXCLUDE=ignorelist.txt
 
+# (optional)
 # Only for the "full" backup
 # note: GZ will be done only if TAR == true
 TAR=true|false
 GZ=true|false
 
+# ACTIONS (optional)
+BEFORE_FULL="string command to launch before FULL backup"
+AFTER_FULL="string command to launch after FULL backup"
+BEFORE_INCREMENTAL="string command to launch before INCREMENTAL backup"
+AFTER_INCREMENTAL="string command to launch after INCREMENTAL backup"
 ```
 
 Then, you may use:
@@ -56,3 +63,6 @@ You may use that crontab:
 30 4 * * * bash /dir/to/inc.sh
 ```
 
+It will create full backup each sunday at 4:00am and incremental backup everyday at 4:30am.
+
+We voluntarily leave half an hour to let the beat full backup end. This is an **example** that may not be your choice.
