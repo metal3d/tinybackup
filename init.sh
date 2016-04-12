@@ -96,6 +96,10 @@ function build-exclude-list(){
     fi
 }
 
-mkdir -p $DEST
-fix-dirname
-clean-old-backup
+function startup () {
+    mkdir -p $DEST
+    fix-dirname
+    clean-old-backup
+}
+
+DATE=$(date +"%Y-%m-%d")
