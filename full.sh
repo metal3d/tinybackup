@@ -3,6 +3,7 @@
 source $(dirname $0)/init.sh || exit $?
 
 launch-before-action || exit 1
+build-exclude-list
 
 if [ "$TAR" == "true" ]; then
     create-empty-tar $DEST/full.tar
