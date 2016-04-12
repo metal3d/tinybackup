@@ -35,8 +35,9 @@ function create-empty-tar() {
 
 # Launch before actions
 function launch-action() {
+    echo "Launching $@"
     if [ ! -z "$1" ]; then
-        $1
+        $@
         return $?
     fi
     return 0
@@ -78,19 +79,22 @@ __IGNORE=$(mktemp)
 # tar cannot use rsync exclude format, so we 
 # create another list that contains full path
 # from ignore list
-if [ ! -z "$EXCLUDE" ]; then
-    __EXCLUDE_FROM="--exclude-from=$EXCLUDE"
-    while read ignore; do
-        isdir=0
-        echo "$ignore" | grep -P "/$" 2>&1 >/dev/null && isdir=1
-        ignore=$(echo $ignore | sed 's,/$,,') 
-        [ $isdir -eq 1 ] && t=d || t=f
-        for s in $SOURCES; do
-            find $s -type $t -name "*$ignore" >> $__IGNORE
-        done
-    done <$EXCLUDE
-    __TAR_EXCLUDE_FROM="--exclude-from=$__IGNORE"
-fi
+function build-exclude-list(){
+    if [ ! -z "$EXCLUDE" ]; then
+        __EXCLUDE_FROM="--exclude-from=$EXCLUDE"
+        while read ignore; do
+            isdir=0
+            echo "$ignore" | grep -P "/$" 2>&1 >/dev/null && isdir=1
+            ignore=$(echo $ignore | sed 's,/$,,') 
+            [ $isdir -eq 1 ] && t=d || t=f
+            for s in $SOURCES; do
+                [ -d "$s" ] || continue
+                find $s -type $t -name "*$ignore" >> $__IGNORE
+            done
+        done <$EXCLUDE
+        __TAR_EXCLUDE_FROM="--exclude-from=$__IGNORE"
+    fi
+}
 
 mkdir -p $DEST
 fix-dirname

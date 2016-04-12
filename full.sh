@@ -16,7 +16,9 @@ for s in $SOURCES; do
         tar $__TAR_EXCLUDE_FROM --exclude-backups -rf $DEST/full.tar $s
     else
         mkdir -p $destdir
-        rsync -ra $__EXCLUDE_FROM $s/ $destdir
+        tmp_dir=$(mktemp -d)
+        rsync -T $tmp_dir -ra $__EXCLUDE_FROM $s/ $destdir
+        rm -rf $tmp_dir
     fi
 done
 
